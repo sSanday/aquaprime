@@ -34,15 +34,17 @@ export const Navigation = () => {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  isActive(item.href)
+                className={`text-sm font-medium transition-colors hover:text-primary ${isActive(item.href)
                     ? "text-primary border-b-2 border-primary"
                     : "text-muted-foreground"
-                }`}
+                  }`}
               >
                 {item.name}
               </Link>
             ))}
+            <Link to="/login">
+              <Button variant="ghost">Login</Button>
+            </Link>
             <Button variant="default" className="bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-primary">
               Get Quote
             </Button>
@@ -68,16 +70,18 @@ export const Navigation = () => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`text-sm font-medium transition-colors hover:text-primary px-2 py-1 ${
-                    isActive(item.href)
+                  className={`text-sm font-medium transition-colors hover:text-primary px-2 py-1 ${isActive(item.href)
                       ? "text-primary bg-primary/10 rounded"
                       : "text-muted-foreground"
-                  }`}
+                    }`}
                   onClick={() => setIsOpen(false)}
                 >
                   {item.name}
                 </Link>
               ))}
+              <Link to="/login" onClick={() => setIsOpen(false)}>
+                <Button variant="ghost" className="w-full justify-start">Login</Button>
+              </Link>
               <Button variant="default" className="mt-4 bg-gradient-to-r from-primary to-accent">
                 Get Quote
               </Button>
