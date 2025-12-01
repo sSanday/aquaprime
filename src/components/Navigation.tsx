@@ -2,6 +2,16 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Fish } from "lucide-react";
+import { useUser } from "@/contexts/UserContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const navItems = [
   { name: "Home", href: "/" },
@@ -15,6 +25,7 @@ const navItems = [
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { user, logout } = useUser();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -23,7 +34,10 @@ export const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 font-bold text-xl">
+          <Link
+            to="/"
+            className="flex items-center space-x-2 font-bold text-xl"
+          >
             <Fish className="h-8 w-8 text-primary" />
             <span className="text-primary">AquaPrime</span>
           </Link>
@@ -34,18 +48,52 @@ export const Navigation = () => {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`text-sm font-medium transition-colors hover:text-primary ${isActive(item.href)
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive(item.href)
                     ? "text-primary border-b-2 border-primary"
                     : "text-muted-foreground"
-                  }`}
+                }`}
               >
                 {item.name}
               </Link>
             ))}
-            <Link to="/login">
-              <Button variant="ghost">Login</Button>
-            </Link>
-            <Button variant="default" className="bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-primary">
+            {user && (
+              <Link
+                to="/orders"
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  isActive("/orders")
+                    ? "text-primary border-b-2 border-primary"
+                    : "text-muted-foreground"
+                }`}>
+                Orders
+              </Link>
+            )}
+
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Avatar className="cursor-pointer">
+                    <AvatarImage src={user.picture} alt={user.name} />
+                    <AvatarFallback>
+                      {user.name.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link to="/login">
+                <Button variant="ghost">Login</Button>
+              </Link>
+            )}
+            <Button
+              variant="default"
+              className="bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-primary"
+            >
               Get Quote
             </Button>
           </div>
@@ -70,19 +118,52 @@ export const Navigation = () => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`text-sm font-medium transition-colors hover:text-primary px-2 py-1 ${isActive(item.href)
+                  className={`text-sm font-medium transition-colors hover:text-primary px-2 py-1 ${
+                    isActive(item.href)
                       ? "text-primary bg-primary/10 rounded"
                       : "text-muted-foreground"
-                    }`}
+                  }`}
                   onClick={() => setIsOpen(false)}
                 >
                   {item.name}
                 </Link>
               ))}
-              <Link to="/login" onClick={() => setIsOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start">Login</Button>
-              </Link>
-              <Button variant="default" className="mt-4 bg-gradient-to-r from-primary to-accent">
+              {user ? (
+                <div className="border-t pt-4 mt-4">
+                  <div className="flex items-center gap-4 px-2 py-1">
+                    <Avatar>
+                      <AvatarImage src={user.picture} alt={user.name} />
+                      <AvatarFallback>
+                        {user.name.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-medium">{user.name}</p>
+                      <p className="text-sm text-muted-foreground">{user.email}</p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start mt-2"
+                    onClick={() => {
+                      logout();
+                      setIsOpen(false);
+                    }}
+                  >
+                    Logout
+                  </Button>
+                </div>
+              ) : (
+                <Link to="/login" onClick={() => setIsOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    Login
+                  </Button>
+                </Link>
+              )}
+              <Button
+                variant="default"
+                className="mt-4 bg-gradient-to-r from-primary to-accent"
+              >
                 Get Quote
               </Button>
             </div>
