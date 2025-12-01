@@ -3,18 +3,34 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { LogIn, User } from "lucide-react";
+import { useGoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
 
-    const handleGoogleLogin = async () => {
-        setLoading(true);
-        // Simulate a delay
-        setTimeout(() => {
+    const login = useGoogleLogin({
+        onSuccess: (tokenResponse) => {
             setLoading(false);
-            toast.info("Google Sign-In is currently disabled. Please use Guest Login.");
-        }, 1000);
+            console.log(tokenResponse);
+            toast.success("Google Login Successful!");
+            // In a real app, you would verify this token with your backend
+            // For now, we simulate a session
+            navigate("/");
+        },
+        onError: () => {
+            setLoading(false);
+            toast.error("Google Login Failed");
+        },
+        onNonRecoverableError: () => {
+            setLoading(false);
+            toast.error("Google Login Failed (Non-recoverable)");
+        }
+    });
+
+    const handleGoogleLogin = () => {
+        setLoading(true);
+        login();
     };
 
     const handleGuestLogin = () => {
